@@ -1,0 +1,55 @@
+{
+    "builders": [
+        {
+            "boot_command": [
+                "<tab>text biosdevname=0 net.ifnames=0 ks=https://gitlab.com/feshiba/packer/kickstart/-/raw/master/centos/centos.{{user `centos_major_version`}}.ks<enter><wait>"
+            ],
+            "boot_wait": "{{user `boot_wait`}}",
+            "disk_size": "{{user `disk_size`}}",
+            "disk_type_id": "0",
+            "guest_os_type": "{{user `guest_os_type`}}",
+            "headless": "{{user `headless`}}",
+            "http_directory": "http",
+            "iso_checksum": "{{user `iso_checksum`}}",
+            "iso_url": "{{user `mirror`}}/{{user `centos_major_version`}}-stream/isos/x86_64/CentOS-Stream-{{user `centos_major_version`}}-x86_64-{{user `iso_version`}}-dvd1.iso",
+            "shutdown_command": "{{user `shutdown_command`}}",
+            "skip_compaction": false,
+            "ssh_password": "root",
+            "ssh_port": 22,
+            "ssh_timeout": "{{user `ssh_timeout`}}",
+            "ssh_username": "root",
+            "tools_upload_flavor": "linux",
+            "type": "vmware-iso",
+            "cpus": "2",
+            "memory": "4096",
+            "vmx_data_post": {
+                "virtualHW.version": "12",
+                "cleanShutdown": "TRUE",
+                "softPowerOff": "FALSE",
+                "ethernet0.virtualDev": "e1000",
+                "ethernet0.startConnected": "TRUE",
+                "ethernet0.wakeonpcktrcv": "false"
+            },
+            "vmx_remove_ethernet_interfaces": true,
+            "version": "12",
+            "vnc_bind_address": "127.0.0.1",
+            "vnc_disable_password": true
+        }
+    ],
+    "post-processors": [
+        [
+            {
+                "type": "vagrant",
+                "compression_level": "{{user `compression_level`}}",
+                "output": "centos-stream-{{user `centos_major_version`}}-{{user `iso_version`}}-amd64-{{.Provider}}.box"
+            },
+            {
+                "type": "vagrant-cloud",
+                "box_tag": "ooto/centos",
+                "access_token": "{{user `cloud_token`}}",
+                "version": "{{user `centos_major_version`}}.{{user `iso_version`}}",
+                "no_release": "{{user `no_release`}}"
+            }
+        ]
+    ]
+}
